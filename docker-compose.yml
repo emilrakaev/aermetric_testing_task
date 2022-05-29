@@ -1,0 +1,33 @@
+version: '3.7'
+services:
+  web:
+    image: "aermetric:dev"
+    build:
+      context: .
+      cache_from:
+        - "aermetric:dev"
+        - "aermetric:latest"
+      args:
+        DJANGO_ENV: development
+    command: python manage.py runserver 0.0.0.0:8000
+    links:
+      - db:db
+    ports:
+      - "0.0.0.0:8000:8000"
+    env_file:
+      - ./.env.dev
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+
+  db:
+    image: postgres:12.0-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env.dev
+    ports:
+      - "0.0.0.0:5430:5432"
+volumes:
+  postgres_data:
