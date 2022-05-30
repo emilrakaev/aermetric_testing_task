@@ -51,3 +51,37 @@ class UploadFileService:
             AircraftStatData.objects.bulk_create(data_list)
         except Exception as e:
             raise FileParseException(f'Something wrong with upload file, error: {e}')
+
+
+class StatisticService:
+    @classmethod
+    def get_statistics(cls):
+        try:
+            annotate_args = {
+                'info_count': Sum('info_count'),
+                'errors_count': Sum('errors_count'),
+                'lower_a': Count('id', filter=Q(type='Lower A')),
+                'lower_b': Count('id', filter=Q(type='Lower B')),
+                'paired_a': Count('id', filter=Q(type='Paired A')),
+                'paired_b': Count('id', filter=Q(type='Paired B')),
+                'upper_a': Count('id', filter=Q(type='Upper A')),
+                'preLegend': Count('id', filter=Q(type='PreLegend')),
+                'legend': Count('id', filter=Q(type='Legend')),
+                'repeat_legend': Count('id', filter=Q(type='Repeat Legend')),
+                'warning': Count('id', filter=Q(type='Warning'))
+            }
+
+            status_query = AircraftStatData.objects.values('status').annotate(
+                **annotate_args
+            )
+            aircraft_query = AircraftStatData.objects.values('aircraft').annotate(
+                **annotate_args
+            )
+            type_query = AircraftStatData.objects.values('type').annotate(
+                **annotate_args
+            )
+            mix_query = chain(aircraft_query, status_query, type_query)
+
+        except Exception as e:
+            raise GenerateStatisticException(f'Something wrong with generate statistic query , error: {e}')
+        return mix_query
