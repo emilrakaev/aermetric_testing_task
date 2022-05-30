@@ -21,7 +21,6 @@ var/
 .installed.cfg
 *.egg
 .eggs/
-.env.dev
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
@@ -50,4 +49,7 @@ coverage.xml
 
 # example database
 drf_example
+
+# csv files
+tmp/
 
