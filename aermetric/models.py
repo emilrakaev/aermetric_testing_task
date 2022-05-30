@@ -45,7 +45,7 @@ STATUS = (
 )
 
 
-class AircraftErrorData(models.Model):
+class AircraftStatData(models.Model):
     priority = models.CharField(max_length=50, choices=PRIORITY)
     type = models.CharField(max_length=50, choices=TYPE)
     aircraft = models.CharField(max_length=50)
@@ -54,4 +54,4 @@ class AircraftErrorData(models.Model):
     info_count = models.IntegerField(default=0)
 
     def __str__(self):
-        return f'id - {self.id} aircraft - {self.aircraft} errors_count - {self.errors_count}'
+        return f'id - {self.id} aircraft - {self.aircraft}'
