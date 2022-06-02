@@ -1,9 +1,8 @@
 import csv
-from itertools import chain
-
-from django.core.files.base import ContentFile
+import re
+from django.core.files.base import ContentFile, File
 from django.core.files.storage import FileSystemStorage
-from django.db.models import Sum, Count, Q
+from django.db.models import Sum, Count, Q, QuerySet
 
 from aermetric.exceptions import FileParseException, GenerateStatisticException
 from aermetric.models import AircraftStatData
@@ -71,17 +70,19 @@ class StatisticService:
                 'warning': Count('id', filter=Q(type='Warning'))
             }
 
-            status_query = AircraftStatData.objects.values('status').annotate(
+            query = AircraftStatData.objects.values('type', 'aircraft', 'status').annotate(
                 **annotate_args
             )
-            aircraft_query = AircraftStatData.objects.values('aircraft').annotate(
-                **annotate_args
+
+            sql, params = query.query.sql_with_params()
+            sql_with_grouping_sets = re.sub(
+                'GROUP BY "aermetric_aircraftstatdata"."type", "aermetric_aircraftstatdata"."aircraft", "aermetric_aircraftstatdata"."status"',
+                'GROUP BY GROUPING SETS (("aermetric_aircraftstatdata"."type"), ("aermetric_aircraftstatdata"."aircraft"), ("aermetric_aircraftstatdata"."status"))',
+                sql,
             )
-            type_query = AircraftStatData.objects.values('type').annotate(
-                **annotate_args
-            )
-            mix_query = chain(aircraft_query, status_query, type_query)
+
+            result = AircraftStatData.objects.raw('SELECT 1 AS id,' + sql_with_grouping_sets[6:], params)
 
         except Exception as e:
             raise GenerateStatisticException(f'Something wrong with generate statistic query , error: {e}')
-        return mix_query
+        return result
