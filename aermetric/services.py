@@ -10,7 +10,7 @@ from aermetric.models import AircraftStatData
 
 class UploadFileService:
     @classmethod
-    def parse_file_and_upload_in_model(cls, file):
+    def parse_file_and_upload_in_model(cls, file: File):
         try:
             fs = FileSystemStorage(location='tmp/')
 
@@ -54,7 +54,7 @@ class UploadFileService:
 
 class StatisticService:
     @classmethod
-    def get_statistics(cls):
+    def get_statistics(cls) -> QuerySet:
         try:
             annotate_args = {
                 'info_count': Sum('info_count'),
