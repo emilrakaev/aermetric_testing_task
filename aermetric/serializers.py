@@ -20,3 +20,7 @@ class AircraftStatDataSerializer(serializers.Serializer):
     class Meta:
         fields = ('type', 'aircraft', 'status', 'errors_count', 'info_count', 'lower_a', 'lower_b', 'paired_a',
                   'paired_b', 'upper_a', 'preLegend', 'legend', 'repeat_legend', 'warning')
+
+
+class UploadFileSerializer(serializers.Serializer):
+    file = serializers.FileField(required=False)
