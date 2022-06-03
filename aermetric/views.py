@@ -1,5 +1,5 @@
 from rest_framework import status as rest_status, status
-from rest_framework.generics import GenericAPIView, ListAPIView, CreateAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView
 from rest_framework.response import Response
 
 from aermetric.serializers import AircraftStatDataSerializer, UploadFileSerializer
@@ -14,7 +14,7 @@ class UploadData(CreateAPIView):
 
         if not serializer.is_valid():
             return Response(data={
-                'message': _('Invalid input'),
+                'message': 'Invalid input',
                 'errors': serializer.errors
             }, status=status.HTTP_406_NOT_ACCEPTABLE)
 
